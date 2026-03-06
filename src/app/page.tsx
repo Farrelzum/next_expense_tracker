@@ -16,8 +16,9 @@ export default async function Home() {
     }];
 
     return (
-    <>
-    <StoreInitializer initialExpenses={mockExpenses} />
-    <ExpenseList />
-    </>);
+        <>
+            <StoreInitializer initialExpenses={mockExpenses} />
+            <ExpenseList />
+        </>
+    );
 }
