@@ -1,4 +1,5 @@
 "use client"
+import { createExpenseOnServer } from "../actions/expense";
 import { useState } from "react";
 import { useExpenseStore } from "../store/useExpenseStore";
 import { Notification } from "./Notification";
@@ -13,7 +14,7 @@ export function AddExpenseForm() {
     const [error, setError] = useState('');
     const addExpense = useExpenseStore((state) => state.addExpense);
 
-    const handleSubmit = ((e: React.SyntheticEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
         if (!title || !amount || !category || !date) {
@@ -23,19 +24,25 @@ export function AddExpenseForm() {
 
         setError('');
 
-        addExpense({
-            id: crypto.randomUUID(),
+        const newlyCreatedExpense = await createExpenseOnServer({
             title: title,
             amount: Math.round(parseFloat(amount) * 100),
             category: category,
             date: new Date(date),
-            createdAt: new Date(),
         });
+
+        if(newlyCreatedExpense) {
+            addExpense(newlyCreatedExpense);
+        } else {
+            setError('Failed to save expense');
+            return;
+        }
+
         setTitle('');
         setAmount('');
         setCategory('');
         setDate('');
-    }) 
+    }
 
     return (
         <>
