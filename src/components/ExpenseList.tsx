@@ -6,8 +6,24 @@ export function ExpenseList() {
     const expenses: Expense[] = useExpenseStore(state => state.expenses);
     
     if (expenses.length === 0) {
-        return(<p>No expenses yet. Add your first!</p>)
-    }
+    return(
+        <div className="flex justify-center items-center min-h-[50vh]"> 
+            <div className="
+                flex flex-col items-center
+                bg-indigo-100/50 p-6 md:p-[2rem] lg:p-10
+                border border-blue-100 rounded-xl shadow-sm
+                text-center
+            ">
+                <p className="text-lg font-medium text-blue-950 mb-2">
+                    No expenses yet
+                </p>
+                <p className="text-base text-slate-600">
+                    Add your first expense to get started!
+                </p>
+            </div>
+        </div>
+    );
+}
 
     const currencyFormatter = new Intl.NumberFormat('en-GB', {
         style: 'currency',
