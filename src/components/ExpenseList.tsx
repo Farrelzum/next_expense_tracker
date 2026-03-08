@@ -36,9 +36,12 @@ const currencyFormatter = new Intl.NumberFormat('en-GB', {
 export function ExpenseList() {
     const { expenses } = useExpenseStore();
 
+    const gridKey = expenses.length > 0 ? expenses.map(e => e.id).join('-') : 'empty';
+
     return (
         <div>
             <motion.div
+                key={gridKey}
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
