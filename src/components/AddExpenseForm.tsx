@@ -5,12 +5,17 @@ import { useExpenseStore } from "../store/useExpenseStore";
 import { Notification } from "./Notification";
 import { CategoryModal } from "./CategoryModal";
 
-export function AddExpenseForm() {
+interface AddExpenseProps {
+    onSuccess: () => void;
+}
+
+export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
     const [title, setTitle] = useState('');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
     const [date, setDate] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
     const addExpense = useExpenseStore((state) => state.addExpense);
 
@@ -23,25 +28,31 @@ export function AddExpenseForm() {
         }
 
         setError('');
+        setIsSubmitting(true);
+        try {
+            const newlyCreatedExpense = await createExpenseOnServer({
+                title: title,
+                amount: Math.round(parseFloat(amount) * 100),
+                category: category,
+                date: new Date(date),
+            });
 
-        const newlyCreatedExpense = await createExpenseOnServer({
-            title: title,
-            amount: Math.round(parseFloat(amount) * 100),
-            category: category,
-            date: new Date(date),
-        });
-
-        if(newlyCreatedExpense) {
-            addExpense(newlyCreatedExpense);
-        } else {
-            setError('Failed to save expense');
-            return;
+            if (newlyCreatedExpense) {
+                addExpense(newlyCreatedExpense);
+                setTitle('');
+                setAmount('');
+                setCategory('');
+                setDate('');
+                onSuccess(); 
+            } else {
+                setError('Failed to save expense');
+            }
+        } catch (error) {
+            setError('A network error occurred. Please try again.');
+            console.log('A network error occurred', error);
+        } finally {
+            setIsSubmitting(false);
         }
-
-        setTitle('');
-        setAmount('');
-        setCategory('');
-        setDate('');
     }
 
     return (
@@ -130,14 +141,28 @@ export function AddExpenseForm() {
                         `}
                     />
                 </div>
-                
                 <button
                     type="submit"
-                    className="
-                        bg-blue-950 text-white font-medium
-                        rounded-lg hover:bg-blue-900 transition-colors
-                        mt-2 p-3 md:col-span-2
-                ">Add</button>
+                    disabled={isSubmitting}
+                    className={`
+                        flex items-center justify-center gap-2
+                        mt-2 p-3 md:p-[0.75rem] md:col-span-2
+                        font-medium rounded-lg transition-all duration-200
+                        ${isSubmitting 
+                            ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-80' 
+                            : 'bg-blue-950 text-white hover:bg-blue-900 shadow-md active:scale-[0.98]'
+                        }
+                    `}
+                >
+                    {isSubmitting ? (
+                        <>
+                            <div className="w-5 h-5 md:w-[1.25rem] md:h-[1.25rem] border-2 border-slate-500 border-t-transparent rounded-full animate-spin" />
+                            <span>Adding...</span>
+                        </>
+                    ) : (
+                        'Add Expense'
+                    )}
+                </button>
             </form>
 
             {isModalOpen && <CategoryModal isModalOpen setIsModalOpen={setIsModalOpen} setCategory={setCategory}/>}

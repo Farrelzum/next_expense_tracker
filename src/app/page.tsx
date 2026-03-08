@@ -1,17 +1,16 @@
-import { prisma } from '../lib/prisma';
 import { StoreInitializer } from '../components/StoreInitializer';
-import { ExpenseList } from '../components/ExpenseList';
-import { Expense } from '@prisma/client';
-import { AddExpenseForm } from '../components/AddExpenseForm';
+import ExpensePage from '../components/ExpensePage';
+import { getExpenses } from '../actions/expense';
 
 export default async function Home() {
-    const expenses = await prisma.expense.findMany();
+    const initialData = await getExpenses(1, 8);
 
     return (
         <>
-            <StoreInitializer initialExpenses={expenses} />
-            <AddExpenseForm />
-            <ExpenseList />
+            <StoreInitializer
+                initialExpenses={initialData.expenses}
+                initialTotalPages={initialData.totalPages}/>
+            <ExpensePage />
         </>
     );
 }
