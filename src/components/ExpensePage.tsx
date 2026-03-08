@@ -17,8 +17,13 @@ const viewVariants = {
 export default function ExpensePage() {
     const [isAdding, setIsAdding] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [success, setSuccess] = useState('');
-    const { currentPage, setExpensesData, totalCount } = useExpenseStore();
+    const {
+            currentPage,
+            setExpensesData,
+            totalCount,
+            setNotification,
+            notification
+        } = useExpenseStore();
     const successAudioRef = useRef<HTMLAudioElement | null>(null);
     
     useEffect(() => {
@@ -59,7 +64,7 @@ export default function ExpensePage() {
             successAudioRef.current.play().catch(e => console.log("Audio playback blocked: ", e));
         }
 
-        setSuccess('Expense added succesfully');
+        setNotification('Expense added succesfully');
         setIsAdding(false);
     }
 
@@ -181,13 +186,13 @@ export default function ExpensePage() {
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    {success && (
-                        <Notification 
-                            message={success} 
-                            type="success" 
-                            onClose={() => setSuccess('')} 
-                        />
-                    )}
+                    {notification && (
+                    <Notification 
+                        message={notification.message} 
+                        type={notification.type} 
+                        onClose={() => setNotification(null)} 
+                    />
+)}
                 </main>
             </div>
         </div>

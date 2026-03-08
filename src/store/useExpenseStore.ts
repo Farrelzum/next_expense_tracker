@@ -6,6 +6,8 @@ interface ExpenseState {
     currentPage: number;
     totalPages: number;
     totalCount: number;
+    notification: { message: string; type: 'error' | 'success' } | null;
+    setNotification: (msg: string | null, type?: 'error' | 'success') => void;
     setExpensesData: (expenses: Expense[], totalPages: number, totalCount: number) => void;
     addExpense: (expense: Expense) => void;
     removeExpense: (id: string) => void;
@@ -17,6 +19,11 @@ export const useExpenseStore = create<ExpenseState>((set) => ({
     currentPage: 1,
     totalPages: 1,
     totalCount: 0,
+    notification: null,
+
+    setNotification: (message, type = 'error') => {
+        set({ notification: message ? { message, type } : null })
+    },
 
     setExpensesData: (expenses, totalPages, totalCount) => set({ 
         expenses, 

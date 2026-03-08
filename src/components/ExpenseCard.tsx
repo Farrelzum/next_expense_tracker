@@ -35,7 +35,7 @@ const currencyFormatter = new Intl.NumberFormat('en-GB', {
 });
 
 export function ExpenseCard({ expense }: ExpenseCardProps) {
-    const { removeExpense, addExpense } = useExpenseStore();
+    const { removeExpense, addExpense, setNotification } = useExpenseStore();
     const amountInPounds = expense.amount / 100;
     const formattedAmount = currencyFormatter.format(amountInPounds);
 
@@ -45,7 +45,8 @@ export function ExpenseCard({ expense }: ExpenseCardProps) {
         try {
             await deleteExpenseOnServer(expense.id);
         }catch(error) {
-            console.log('Unable to delete expense', error);
+            console.log('Failed to delete: ', error);
+            setNotification('Failed to delete. Please try again.');
             addExpense(expenseCopy);
         }
     }

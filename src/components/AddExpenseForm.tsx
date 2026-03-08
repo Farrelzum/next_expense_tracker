@@ -17,7 +17,7 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
-    const addExpense = useExpenseStore((state) => state.addExpense);
+    const { addExpense, notification, setNotification } = useExpenseStore();
 
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
@@ -45,10 +45,10 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
                 setDate('');
                 onSuccess(); 
             } else {
-                setError('Failed to save expense');
+                setNotification('Failed to save expense');
             }
         } catch (error) {
-            setError('A network error occurred. Please try again.');
+            setNotification('A network error occurred. Please try again.');
             console.log('A network error occurred', error);
         } finally {
             setIsSubmitting(false);
@@ -167,13 +167,13 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
 
             {isModalOpen && <CategoryModal isModalOpen setIsModalOpen={setIsModalOpen} setCategory={setCategory}/>}
 
-                {error && (
+                {notification && (
                     <Notification 
-                        message={error} 
-                        type="error" 
-                        onClose={() => setError('')} 
+                        message={notification.message} 
+                        type={notification.type} 
+                        onClose={() => setNotification(null)} 
                     />
-                )}
+)}
         </>
     );
 }
