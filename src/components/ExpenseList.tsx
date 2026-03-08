@@ -14,6 +14,7 @@ export function ExpenseList() {
                     md:grid-cols-2 lg:grid-cols-3
                     xl:grid-cols-4
                     gap-4 md:gap-[1.5rem] lg:gap-6
+                    justify-items-center
             ">
                 {expenses.map((expense, index) => {
                         return <ExpenseCard key={expense.id} expense={expense} index={index}/>
