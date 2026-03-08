@@ -18,7 +18,7 @@ export default function ExpensePage() {
     const [isAdding, setIsAdding] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [success, setSuccess] = useState('');
-    const { expenses, currentPage, setExpensesData, totalCount } = useExpenseStore();
+    const { currentPage, setExpensesData, totalCount } = useExpenseStore();
     const successAudioRef = useRef<HTMLAudioElement | null>(null);
     
     useEffect(() => {
