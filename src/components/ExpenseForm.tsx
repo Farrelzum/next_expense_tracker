@@ -1,53 +1,75 @@
 "use client"
-import { createExpenseOnServer } from "../actions/expense";
+import { createExpenseOnServer, updateExpenseOnServer } from "../actions/expense";
 import { useState } from "react";
 import { useExpenseStore } from "../store/useExpenseStore";
 import { Notification } from "./Notification";
 import { CategoryModal } from "./CategoryModal";
+import { Expense } from "@prisma/client";
 
-interface AddExpenseProps {
+interface ExpenseFormProps {
     onSuccess: () => void;
+    initialData?: Expense;
 }
 
-export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
-    const [title, setTitle] = useState('');
-    const [amount, setAmount] = useState('');
-    const [category, setCategory] = useState('');
-    const [date, setDate] = useState('');
+export function ExpenseForm({ onSuccess, initialData }: ExpenseFormProps) {
+    const [title, setTitle] = useState(initialData?.title || '');
+    const [amount, setAmount] = useState(
+        initialData ? (initialData.amount / 100).toString() : '');
+    const [category, setCategory] = useState(initialData?.category || '');
+    const [date, setDate] = useState(
+        initialData ?
+            new Date(initialData.date).toISOString().split('T')[0] : ''
+    );
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { addExpense, notification, setNotification } = useExpenseStore();
+    const { 
+            addExpense,
+            updateExpense,
+            notification,
+            setNotification
+        } = 
+            useExpenseStore();
 
-    const handleSubmit = async (e: React.SyntheticEvent) => {
+const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
         if (!title || !amount || !category || !date) {
-            setNotification('Please fill in all fields before adding an expense.');
+            setNotification('Please fill in all fields before saving.', 'error');
             return;
         }
 
         setNotification(null);
         setIsSubmitting(true);
+        
         try {
-            const newlyCreatedExpense = await createExpenseOnServer({
+            const expensePayload = {
                 title: title,
                 amount: Math.round(parseFloat(amount) * 100),
                 category: category,
-                date: new Date(date),
-            });
+                date: new Date(date), 
+            };
 
-            if (newlyCreatedExpense) {
-                addExpense(newlyCreatedExpense);
-                setTitle('');
-                setAmount('');
-                setCategory('');
-                setDate('');
-                onSuccess(); 
+            if (initialData?.id) {
+                const updatedExpense = await updateExpenseOnServer(initialData.id, expensePayload);
+                
+                if (updatedExpense) {
+                    updateExpense(initialData.id, updatedExpense);
+                    onSuccess();
+                } else {
+                    setNotification('Failed to update expense', 'error');
+                }
             } else {
-                setNotification('Failed to save expense');
+                const newlyCreatedExpense = await createExpenseOnServer(expensePayload);
+                
+                if (newlyCreatedExpense) {
+                    addExpense(newlyCreatedExpense);
+                    onSuccess();
+                } else {
+                    setNotification('Failed to save expense', 'error');
+                }
             }
         } catch (error) {
-            setNotification('A network error occurred. Please try again.');
+            setNotification('A network error occurred. Please try again.', 'error');
             console.log('A network error occurred', error);
         } finally {
             setIsSubmitting(false);
@@ -156,10 +178,10 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
                     {isSubmitting ? (
                         <>
                             <div className="w-5 h-5 md:w-[1.25rem] md:h-[1.25rem] border-2 border-slate-500 border-t-transparent rounded-full animate-spin" />
-                            <span>Adding...</span>
+                            <span>{initialData ? 'Saving...' : 'Adding...'}</span>
                         </>
                     ) : (
-                        'Add Expense'
+                        initialData ? 'Save Changes' : 'Add Expense'
                     )}
                 </button>
             </form>

@@ -11,6 +11,7 @@ interface ExpenseState {
     setExpensesData: (expenses: Expense[], totalPages: number, totalCount: number) => void;
     addExpense: (expense: Expense) => void;
     removeExpense: (id: string) => void;
+    updateExpense: (id: string, updatedExpense: Expense) => void;
     setCurrentPage: (page: number) => void;
 }
 
@@ -50,6 +51,20 @@ export const useExpenseStore = create<ExpenseState>((set) => ({
         return {
             expenses: newExpensesList,
             totalCount: state.totalCount - 1
+        };
+    }),
+
+    updateExpense: (id, updatedExpense) => set((state) => {
+        const newExpensesList = state.expenses.map((expense) => {
+            if (expense.id === id) {
+                return updatedExpense; 
+            }
+        
+            return expense;
+        });
+
+        return {
+            expenses: newExpensesList
         };
     }),
 

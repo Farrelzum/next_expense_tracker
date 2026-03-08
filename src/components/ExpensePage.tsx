@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getExpenses } from "../actions/expense";
 import { useExpenseStore } from "../store/useExpenseStore";
-import { AddExpenseForm } from "./AddExpenseForm";
+import { ExpenseForm } from "./ExpenseForm";
 import { ExpenseList } from "./ExpenseList";
 import { Notification } from "./Notification";
 import { PlusIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
@@ -16,6 +16,7 @@ const viewVariants = {
 
 export default function ExpensePage() {
     const [isAdding, setIsAdding] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isLoading, setIsLoading] = useState(true);
     const {
             currentPage,
@@ -64,7 +65,7 @@ export default function ExpensePage() {
             successAudioRef.current.play().catch(e => console.log("Audio playback blocked: ", e));
         }
 
-        setNotification('Expense added succesfully');
+        setNotification('Expense added succesfully', 'success');
         setIsAdding(false);
     }
 
@@ -144,7 +145,7 @@ export default function ExpensePage() {
                                 animate="animate"
                                 exit="exit"
                                 className="w-full flex justify-center">
-                                <AddExpenseForm onSuccess={handleAddSuccess} />
+                                <ExpenseForm onSuccess={handleAddSuccess} />
                             </motion.div>
                         ) : totalCount === 0 ? (
                             <motion.div
