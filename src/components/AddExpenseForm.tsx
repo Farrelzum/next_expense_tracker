@@ -16,18 +16,17 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
     const [date, setDate] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState('');
     const { addExpense, notification, setNotification } = useExpenseStore();
 
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
         if (!title || !amount || !category || !date) {
-            setError('Please fill in all fields before adding an expense.');
+            setNotification('Please fill in all fields before adding an expense.');
             return;
         }
 
-        setError('');
+        setNotification(null);
         setIsSubmitting(true);
         try {
             const newlyCreatedExpense = await createExpenseOnServer({
@@ -76,7 +75,7 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
                         id="title" type="text"
                         value={title} onChange={(e) => {
                             setTitle(e.target.value);
-                            setError('');
+                            setNotification(null);
                         }}
                         className="
                             bg-white border border-blue-100 rounded-lg p-2.5 
@@ -93,7 +92,7 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
                         id="amount" type="number" step="0.01"
                         value={amount} onChange={(e) => {
                             setAmount(e.target.value);
-                            setError('');
+                            setNotification(null);
                         }}
                         className="
                             bg-white border border-blue-100 rounded-lg p-2.5 
@@ -109,7 +108,7 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
                         type="button" 
                         onClick={() => {
                             setIsModalOpen(true);
-                            setError('');
+                            setNotification(null);
                         }}
                         className={`
                             bg-white border border-blue-100 rounded-lg p-2.5 
@@ -132,7 +131,7 @@ export function AddExpenseForm({ onSuccess }: AddExpenseProps) {
                         id="date" type="date"
                         value={date} onChange={(e) => {
                             setDate(e.target.value);
-                            setError('');
+                            setNotification(null);
                         }}
                         className={`
                             bg-white border border-blue-100 rounded-lg p-2.5 
