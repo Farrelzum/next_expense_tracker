@@ -39,6 +39,7 @@ export const ExpenseCard = forwardRef<HTMLDivElement, ExpenseCardProps>(
             try {
                 await deleteExpenseOnServer(expense.id);
             } catch(error) {
+                console.log('Failed to delete: ', error);
                 setNotification('Failed to delete. Please try again.', 'error');
                 addExpense(expenseCopy);
             }

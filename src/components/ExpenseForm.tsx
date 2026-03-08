@@ -86,7 +86,7 @@ const handleSubmit = async (e: React.SyntheticEvent) => {
                     border border-blue-100 shadow-sm
                     rounded-xl p-5 md:p-[2rem] md:gap-[1.5rem]
                     lg:p-10 lg:gap-8
-                    w-full
+                    w-full md:max-w-[40rem] lg:max-w-[48rem] mx-auto
             ">
                 <div className="flex flex-col gap-1 md:col-span-2">
                     <label htmlFor="title"

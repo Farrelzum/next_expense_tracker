@@ -70,9 +70,14 @@ export default function ExpensePage() {
     }
 
     return (
-        <div className="min-h-screen bg-indigo-100/50 p-4 md:p-[2rem] lg:p-10">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-8 md:mb-[2.5rem] lg:mb-12">
+        /* 1. h-screen i overflow-hidden całkowicie blokują scrollowanie samej strony */
+        <div className="h-screen bg-indigo-100/50 p-4 md:p-[1.5rem] lg:p-6 flex flex-col overflow-hidden">
+            
+            {/* 2. max-w-7xl i mx-auto dbają o to, by całość była zawsze na środku dużego monitora */}
+            <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0">
+                
+                {/* Zmniejszyłem nieco margines dolny (mb), żeby zyskać miejsce na karty */}
+                <div className="flex justify-between items-center mb-4 md:mb-[1.5rem] lg:mb-6 shrink-0">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-bold text-blue-950">
                             {isAdding ? "New Expense" : "My Expenses"}
@@ -93,40 +98,18 @@ export default function ExpensePage() {
                         }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         onClick={() => setIsAdding(!isAdding)}
-                        className={`
-                            flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 rounded-xl font-medium
-                        `}
+                        className={`flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 rounded-xl font-medium`}
                     >
                         {isAdding ? (
-                            <motion.div 
-                                key="back"
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 10 }}
-                                className="flex items-center gap-2"
-                            >
-                                <motion.span
-                                    initial={{ rotate: 180, opacity: 0 }}
-                                    animate={{ rotate: 0, opacity: 1 }}
-                                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                >
+                            <motion.div key="back" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="flex items-center gap-2">
+                                <motion.span initial={{ rotate: 180, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
                                     <ChevronLeftIcon className="w-5 h-5" />
                                 </motion.span>
                                 <span className="whitespace-nowrap">Back</span>
                             </motion.div>
                         ) : (
-                            <motion.div 
-                                key="add"
-                                initial={{ opacity: 0, x: 10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
-                                className="flex items-center gap-2"
-                            >
-                                <motion.span
-                                    initial={{ rotate: -90, opacity: 0 }}
-                                    animate={{ rotate: 0, opacity: 1 }}
-                                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                >
+                            <motion.div key="add" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="flex items-center gap-2">
+                                <motion.span initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
                                     <PlusIcon className="w-5 h-5" />
                                 </motion.span>
                                 <span>Add Expense</span>
@@ -135,65 +118,52 @@ export default function ExpensePage() {
                     </motion.button>
                 </div>
 
-                <main className="flex justify-center">
+                {/* 3. min-h-0 pozwala tej sekcji dopasować się do reszty ekranu */}
+                <main className="flex-1 flex flex-col min-h-0 relative">
                     <AnimatePresence mode="wait">
                         {isAdding ? (
-                            <motion.div
-                                key="form-view"
-                                variants={viewVariants}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                className="w-full flex justify-center">
+                            <motion.div 
+                                key="form-view" 
+                                variants={viewVariants} 
+                                initial="initial" animate="animate" exit="exit" 
+                                /* overflow-y-auto zabezpiecza formularz na bardzo małych telefonach */
+                                className="w-full flex-1 flex flex-col items-center overflow-y-auto pb-4"
+                            >
                                 <ExpenseForm onSuccess={handleAddSuccess} />
                             </motion.div>
                         ) : totalCount === 0 ? (
-                            <motion.div
-                                key="empty-view"
-                                variants={viewVariants}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                className="w-full flex justify-center py-20">
-                                    <div className="
-                                        bg-indigo-50 border border-blue-100
-                                        p-10 rounded-2xl text-center max-w-md shadow-sm
-                                    ">
-                                    <div className="
-                                        bg-blue-100 w-16 h-16 rounded-full mx-auto mb-4
-                                        flex items-center justify-center
-                                    ">
+                            <motion.div key="empty-view" variants={viewVariants} initial="initial" animate="animate" exit="exit" className="w-full flex justify-center py-20">
+                                <div className="bg-indigo-50 border border-blue-100 p-10 rounded-2xl text-center max-w-md shadow-sm">
+                                    <div className="bg-blue-100 w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center">
                                         <PlusIcon className="w-8 h-8 text-blue-600" />
                                     </div>
                                     <h3 className="text-lg font-bold text-blue-950 mb-2">No expenses yet</h3>
                                     <p className="text-slate-600 mb-6">Your list is empty. Start by adding your first transaction!</p>
-                                    <button
-                                        onClick={() => setIsAdding(true)}
-                                        className="text-blue-600 font-semibold hover:underline"
-                                    >
+                                    <button onClick={() => setIsAdding(true)} className="text-blue-600 font-semibold hover:underline">
                                         Add your first expense →
                                     </button>
                                 </div>
                             </motion.div>
                         ) : (
-                            <motion.div
-                                key="list-view"
-                                variants={viewVariants}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                className="w-full">
+                            <motion.div 
+                                key="list-view" 
+                                variants={viewVariants} 
+                                initial="initial" animate="animate" exit="exit" 
+                                /* 4. flex-1 i min-h-0 oddają pełną kontrolę nad layoutem komponentowi ExpenseList */
+                                className="w-full flex-1 flex flex-col min-h-0"
+                            >
                                  <ExpenseList />
                             </motion.div>
                         )}
                     </AnimatePresence>
+                    
                     {notification && (
-                    <Notification 
-                        message={notification.message} 
-                        type={notification.type} 
-                        onClose={() => setNotification(null)} 
-                    />
-)}
+                        <Notification 
+                            message={notification.message} 
+                            type={notification.type} 
+                            onClose={() => setNotification(null)} 
+                        />
+                    )}
                 </main>
             </div>
         </div>

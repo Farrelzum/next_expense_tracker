@@ -36,10 +36,13 @@ export const useExpenseStore = create<ExpenseState>((set) => ({
         const newExpenses = [expense, ...state.expenses];
         
         if (newExpenses.length > 8) newExpenses.pop();
+        const newTotalCount = state.totalCount + 1;
+        const newTotalPages = Math.ceil(newTotalCount / 8) || 1;
         
         return { 
             expenses: newExpenses,
-            totalCount: state.totalCount + 1
+            totalCount: state.totalCount + 1,
+            totalPages: newTotalPages
         };
     }),
 
@@ -48,9 +51,19 @@ export const useExpenseStore = create<ExpenseState>((set) => ({
             return expense.id !== id;
         })
 
+        const newTotalCount = Math.max(0, state.totalCount - 1);
+        const newTotalPages = Math.ceil(newTotalCount / 8) || 1;
+
+        let newCurrentPage = state.currentPage;
+        if (newCurrentPage > newTotalPages) {
+            newCurrentPage = newTotalPages;
+        }
+
         return {
             expenses: newExpensesList,
-            totalCount: state.totalCount - 1
+            totalCount: state.totalCount - 1,
+            totalPages: newTotalPages,
+            currentPage: newCurrentPage
         };
     }),
 
