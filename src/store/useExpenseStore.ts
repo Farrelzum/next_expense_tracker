@@ -8,6 +8,7 @@ interface ExpenseState {
     totalCount: number;
     setExpensesData: (expenses: Expense[], totalPages: number, totalCount: number) => void;
     addExpense: (expense: Expense) => void;
+    removeExpense: (id: string) => void;
     setCurrentPage: (page: number) => void;
 }
 
@@ -31,6 +32,17 @@ export const useExpenseStore = create<ExpenseState>((set) => ({
         return { 
             expenses: newExpenses,
             totalCount: state.totalCount + 1
+        };
+    }),
+
+    removeExpense: (id) => set((state) => {
+        const newExpensesList = state.expenses.filter((expense) => {
+            return expense.id !== id;
+        })
+
+        return {
+            expenses: newExpensesList,
+            totalCount: state.totalCount - 1
         };
     }),
 

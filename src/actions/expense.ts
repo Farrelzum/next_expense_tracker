@@ -34,7 +34,17 @@ export async function createExpenseOnServer(newExpense: Omit<Expense, 'id' | "cr
         const savedExpense = await prisma.expense.create({ data: newExpense });
         return savedExpense;
     } catch(error) {
-        console.log(error);
+        console.log('Unable to create expense', error);
         return;
     }
+}
+
+export async function deleteExpenseOnServer(id: string) {
+  try {
+    const deletedExpense = await prisma.expense.delete({ where: {id}})
+    return deletedExpense;
+  } catch(error) {
+    console.log('Unable to delete expense', error);
+    return
+  }
 }
